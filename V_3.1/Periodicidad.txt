@@ -1,1 +1,0 @@
-Cambia la fecha de vencimiento según la periodicidad.
