@@ -75,7 +75,7 @@ $fecha_hoy = date('Y-m-d');
         .item-pendiente { cursor: pointer; transition: 0.2s; }
         .item-pendiente:hover { background-color: #f1f5f9; }
         .footer-text { text-align: center; color: rgba(255,255,255,0.4); font-size: 11px; margin-top: 20px; }
-        .badge-modo { display: none; margin-bottom: 15px; font-weight: bold; }
+        .badge-modo { display: none; margin-bottom: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -92,7 +92,7 @@ $fecha_hoy = date('Y-m-d');
             <?php endif; ?>
 
             <div id="badge_edicion" class="alert alert-warning border-0 rounded-3 text-center badge-modo">
-                <i class="fa-solid fa-lock"></i> MODO ACTUALIZACIÓN: Los datos originales están protegidos. Solo puedes cambiar el estado y añadir observaciones.
+                <i class="fa-solid fa-lock"></i> Recuerda que desde el buscador solo se puede modificar el campo "¿Tarea Completada?". El resto de campos quedarán inmutables.
             </div>
 
             <form action="guardar_nueva.php" method="POST" id="form_mantenimiento">
@@ -139,6 +139,17 @@ $fecha_hoy = date('Y-m-d');
                     </div>
                 </div>
 
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha Creación / Base</label>
+                        <input type="date" name="fecha_creacion" id="fecha_creacion" class="form-control" value="<?= $fecha_hoy ?>" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" style="color: #003366;">Fecha Siguiente Vencimiento (Estimada)</label>
+                        <input type="text" id="fecha_vencimiento_vista" class="form-control" style="background-color: #eef2f6; font-weight: 600;" readonly>
+                    </div>
+                </div>
+
                 <div class="mb-4">
                     <label class="form-label">Técnico Responsable</label>
                     <select name="tecnico_data" id="tecnico_data" class="form-select" required>
@@ -160,8 +171,6 @@ $fecha_hoy = date('Y-m-d');
                     <label class="form-label">URL Documentación (Ayuda)</label>
                     <input type="url" name="documentacion" id="documentacion" class="form-control" placeholder="Link a manual o procedimiento">
                 </div>
-
-                <input type="hidden" name="fecha_creacion" value="<?= $fecha_hoy ?>">
 
                 <button type="submit" class="btn btn-submit" id="btn_accion">
                     <i class="fa-solid fa-file-signature"></i> Registrar Nueva Tarea
@@ -186,7 +195,7 @@ $fecha_hoy = date('Y-m-d');
                         <tr><td colspan="3" class="text-center text-muted">No hay tareas pendientes en este momento.</td></tr>
                     <?php else: ?>
                         <?php foreach ($tareas_pendientes as $t): ?>
-                            <tr class="item-pendiente" onclick="cargarTarea('<?= $t['id'] ?>', '<?= addslashes($t['fields']['Title'] ?? '') ?>', '<?= $t['fields']['Prioridad'] ?? '' ?>', '<?= $t['fields']['Impacto'] ?? '' ?>', '<?= $t['fields']['Periodicidad'] ?? '' ?>', '<?= htmlspecialchars(($t['fields']['Tecnico'] ?? '').'|'.($t['fields']['Realiza'] ?? '')) ?>', '<?= addslashes($t['fields']['Observaciones'] ?? '') ?>', '<?= addslashes($t['fields']['Documentacion'] ?? '') ?>')">
+                            <tr class="item-pendiente" onclick="cargarTarea('<?= $t['id'] ?>', '<?= addslashes($t['fields']['Title'] ?? '') ?>', '<?= $t['fields']['Prioridad'] ?? '' ?>', '<?= $t['fields']['Impacto'] ?? '' ?>', '<?= $t['fields']['Periodicidad'] ?? '' ?>', '<?= htmlspecialchars(($t['fields']['Tecnico'] ?? '').'|'.($t['fields']['Realiza'] ?? '')) ?>', '<?= addslashes($t['fields']['Observaciones'] ?? '') ?>', '<?= addslashes($t['fields']['Documentacion'] ?? '') ?>', '<?= $t['fields']['FechaCreacion'] ?? '' ?>')">
                                 <td><strong><?= htmlspecialchars($t['fields']['Title'] ?? '') ?></strong></td>
                                 <td><span class="badge bg-secondary"><?= htmlspecialchars($t['fields']['Periodicidad'] ?? '') ?></span></td>
                                 <td><?= htmlspecialchars($t['fields']['Tecnico'] ?? 'Sin asignar') ?></td>
@@ -201,36 +210,72 @@ $fecha_hoy = date('Y-m-d');
     <div class="footer-text">Desarrollado por <strong>gcano@720tec.es</strong></div>
 
     <script>
-        function cargarTarea(id, titulo, prioridad, impacto, periodicidad, tecnico, observaciones, documentacion) {
-            // Asignar ID de la tarea a modificar
-            document.getElementById('id_tarea').value = id;
+        document.addEventListener("DOMContentLoaded", function () {
+            const periodicidadSelect = document.getElementById('periodicidad');
+            const fechaCreacionInput = document.getElementById('fecha_creacion');
+            const fechaVencimientoVista = document.getElementById('fecha_vencimiento_vista');
+
+            function actualizarVistaPrevia() {
+                if (!fechaCreacionInput.value) return;
+                
+                let fecha = new Date(fechaCreacionInput.value);
+                const periodicidad = periodicidadSelect.value.toLowerCase();
+
+                if (periodicidad.includes('diaria')) { fecha.setDate(fecha.getDate() + 1); }
+                else if (periodicidad.includes('semanal')) { fecha.setDate(fecha.getDate() + 7); }
+                else if (periodicidad.includes('mensual')) { fecha.setMonth(fecha.getMonth() + 1); }
+                else if (periodicidad.includes('trimestral')) { fecha.setMonth(fecha.getMonth() + 3); }
+                else if (periodicidad.includes('semestral')) { fecha.setMonth(fecha.getMonth() + 6); }
+                else if (periodicidad.includes('anual')) { fecha.setFullYear(fecha.getFullYear() + 1); }
+
+                const yyyy = fecha.getFullYear();
+                const mm = String(fecha.getMonth() + 1).padStart(2, '0');
+                const dd = String(fecha.getDate()).padStart(2, '0');
+                fechaVencimientoVista.value = `${yyyy}-${mm}-${dd}`;
+            }
+
+            periodicidadSelect.addEventListener('change', actualizarVistaPrevia);
+            fechaCreacionInput.addEventListener('change', actualizarVistaPrevia);
+            actualizarVistaPrevia();
             
-            // Rellenar datos originales
+            window.actualizarVistaPreviaJS = actualizarVistaPrevia;
+        });
+
+        function cargarTarea(id, titulo, prioridad, impacto, periodicidad, tecnico, observaciones, documentacion, fechaCreacion) {
+            document.getElementById('id_tarea').value = id;
             document.getElementById('titulo').value = titulo;
             document.getElementById('prioridad').value = prioridad;
             document.getElementById('impacto').value = impacto;
             document.getElementById('periodicidad').value = periodicidad;
-            document.getElementById('periodicidad_hidden').value = periodicidad; // Respaldo para procesar la fecha en PHP
+            document.getElementById('periodicidad_hidden').value = periodicidad; 
             document.getElementById('completada').value = 'No'; 
             document.getElementById('observaciones').value = observaciones;
             document.getElementById('documentacion').value = documentacion;
             document.getElementById('tecnico_data').value = tecnico;
+            
+            if(fechaCreacion) {
+                document.getElementById('fecha_creacion').value = fechaCreacion.split('T')[0];
+            }
 
-            // CONVERTIR CAMPOS EN INMUTABLES (Hacerlos inmodificables)
+            // Inmutabilidad total de campos originales
             document.getElementById('titulo').readOnly = true;
             document.getElementById('documentacion').readOnly = true;
+            document.getElementById('fecha_creacion').readOnly = true;
             document.getElementById('prioridad').disabled = true;
             document.getElementById('impacto').disabled = true;
             document.getElementById('periodicidad').disabled = true;
             document.getElementById('tecnico_data').disabled = true;
 
-            // Mostrar el aviso de modo bloqueo y actualizar diseño del botón
+            if(typeof window.actualizarVistaPreviaJS === 'function') {
+                window.actualizarVistaPreviaJS();
+            }
+
+            // Mostrar el cartel recuperado
             document.getElementById('badge_edicion').style.display = 'block';
             const btn = document.getElementById('btn_accion');
             btn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Imputar Cambios de Revisión';
             btn.style.backgroundColor = '#008a52';
             
-            // Hacemos scroll suave arriba al formulario
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>

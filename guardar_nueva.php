@@ -11,12 +11,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_tarea = $_POST['id_tarea'] ?? '';
     $completada = $_POST['completada'];
     $observaciones = $_POST['observaciones'] ?? '';
+    $creacion = $_POST['fecha_creacion'];
 
-    // DECISIÓN DE ACCIÓN: ¿Actualizar tarea existente o Crear una nueva actividad?
     if (!empty($id_tarea)) {
 
         // --- MODO TÉCNICO: ACTUALIZACIÓN INMUTABLE ---
-        // Como deshabilitamos el campo 'periodicidad' en HTML, recuperamos el valor usando el campo oculto '_hidden'
         $periodicidad = $_POST['periodicidad_hidden'] ?? '';
         $proxima_revision = null;
 
@@ -41,7 +40,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $proxima_revision = $fecha_base->format('Y-m-d');
         }
 
-        // Estructura Inmutable: ÚNICAMENTE enviamos a SharePoint los dos campos autorizados
         $fields = [
             'Completada' => $completada,
             'Observaciones' => $observaciones
@@ -59,7 +57,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // --- MODO ADMINISTRADOR: CREAR NUEVA ACTIVIDAD ---
         $datos_tecnico = explode('|', $_POST['tecnico_data']);
-        $creacion = $_POST['fecha_creacion'];
         $periodicidad = $_POST['periodicidad'];
 
         $fields = [
@@ -80,7 +77,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $method = 'POST';
     }
 
-    // Ejecutar petición hacia Microsoft Graph
     $ch = curl_init($url);
     if ($method === 'POST') {
         curl_setopt($ch, CURLOPT_POST, true);
