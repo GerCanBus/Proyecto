@@ -20,6 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'Prioridad' => $_POST['prioridad'],
         'Impacto' => $_POST['impacto'],
         'Periodicidad' => $_POST['periodicidad'],
+        'Completada' => $_POST['completada'], // SE AÑADE EL RECOJO DINÁMICO DE ESTA COLUMNA CON RESPECTO A SHAREPOINT
         'Documentacion' => $_POST['documentacion'] ?? '',
         'Observaciones' => $_POST['observaciones'] ?? '',
         'Tecnico' => $datos_tecnico[0],
@@ -40,14 +41,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'Content-Type: application/json; charset=utf-8'
     ]);
 
-    $res = curl_exec($ch);
-    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    if ($code == 201) {
+    if ($http_code == 201 || $http_code == 200) {
         header("Location: index.php?status=success");
     } else {
-        header("Location: index.php?status=error&msg=" . $code);
+        $err_data = json_decode($response, true);
+        $msg = $err_data['error']['message'] ?? 'GraphError';
+        header("Location: index.php?status=error&msg=" . urlencode($msg));
     }
     exit();
 }

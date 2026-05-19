@@ -19,6 +19,8 @@ function getColumnChoices($token, $columnName)
 $opciones_prioridad = getColumnChoices($token, 'Prioridad');
 $opciones_impacto = getColumnChoices($token, 'Impacto');
 $opciones_periodicidad = getColumnChoices($token, 'Periodicidad');
+// Nueva opción traída dinámicamente de SharePoint:
+$opciones_completada = getColumnChoices($token, 'Completada');
 
 // 2. Obtener técnicos oficiales (Filtro "- 720tec")
 $ch = curl_init("https://graph.microsoft.com/v1.0/users?\$select=displayName,userPrincipalName&\$top=999");
@@ -28,13 +30,8 @@ $res_users = json_decode(curl_exec($ch), true);
 curl_close($ch);
 
 $usuarios_filtrados = array_filter($res_users['value'] ?? [], function ($u) {
-    return str_ends_with($u['displayName'], '- 720tec');
+    return strpos($u['displayName'], '- 720tec') !== false;
 });
-usort($usuarios_filtrados, fn($a, $b) => strcmp($a['displayName'], $b['displayName']));
-
-// 3. Fechas autorrellenadas
-$fecha_hoy = date('Y-m-d');
-$fecha_vencimiento = date('Y-m-d', strtotime('+7 days'));
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -42,209 +39,213 @@ $fecha_vencimiento = date('Y-m-d', strtotime('+7 days'));
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>720tec | Mantenimiento Proactivo</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>720tec - Registro Mantenimiento</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <style>
         :root {
-            --navy: #003366;
-            --cyan: #00d4ff;
-            --dark-bg: #001529;
-            --input-border: #eaecf0;
+            --bg-dark: #0b0f19;
+            --card-dark: #151c2c;
+            --accent-cyan: #00f2fe;
+            --accent-blue: #4facfe;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #243049;
         }
 
         body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: radial-gradient(circle at top right, #002347, var(--dark-bg));
             min-height: 100vh;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
+            align-items: center;
             padding: 40px 20px;
-            margin: 0;
         }
 
-        .main-card {
-            background: white;
-            border-radius: 30px;
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+        .form-card {
+            background: var(--card-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px;
             width: 100%;
-            max-width: 850px;
-            overflow: hidden;
-            position: relative;
+            max-width: 650px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
-        .header {
-            background: var(--navy);
-            padding: 35px;
+        .brand-header {
             text-align: center;
-            color: white;
-            border-bottom: 6px solid var(--cyan);
+            margin-bottom: 35px;
         }
 
-        .header img {
-            max-height: 45px;
-            margin-bottom: 12px;
-        }
-
-        .header h2 {
+        .brand-header h1 {
+            font-size: 28px;
             font-weight: 700;
-            font-size: 24px;
-            margin: 0;
-            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
         }
 
-        .header p {
-            color: var(--cyan);
-            font-size: 13px;
-            font-weight: 600;
-            margin: 5px 0 0;
-            opacity: 0.9;
-        }
-
-        .form-section {
-            padding: 45px;
+        .brand-header p {
+            color: var(--text-muted);
+            font-size: 14px;
         }
 
         .form-label {
-            font-weight: 700;
-            color: var(--navy);
-            font-size: 11px;
+            font-size: 13px;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.5px;
+            color: var(--accent-cyan);
             margin-bottom: 8px;
         }
 
         .form-control,
         .form-select {
+            background-color: #0b0f19 !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-main) !important;
             border-radius: 12px;
-            border: 2px solid var(--input-border);
-            padding: 12px 15px;
-            font-size: 14px;
-            color: #334155;
-            transition: 0.2s;
+            padding: 12px 16px;
+            font-size: 15px;
+            transition: all 0.3s ease;
         }
 
         .form-control:focus,
         .form-select:focus {
-            border-color: var(--cyan);
-            box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.1);
-            outline: none;
+            border-color: var(--accent-cyan) !important;
+            box-shadow: 0 0 0 3px rgba(0, 242, 254, 0.15) !important;
         }
 
-        /* Estilo del Botón solicitado */
+        .form-select option {
+            background-color: var(--card-dark);
+            color: var(--text-main);
+        }
+
         .btn-submit {
-            background: var(--navy);
-            color: white;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
             border: none;
-            padding: 18px;
-            border-radius: 16px;
+            color: #0b0f19;
             font-weight: 700;
+            font-size: 16px;
+            padding: 14px;
+            border-radius: 12px;
             width: 100%;
-            transition: 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 242, 254, 0.2);
         }
 
         .btn-submit:hover {
-            background: var(--cyan) !important;
-            color: var(--navy) !important;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
-        }
-
-        .alert-custom {
-            border-radius: 15px;
-            padding: 15px;
-            font-weight: 700;
-            margin-bottom: 30px;
-            text-align: center;
-            border: 2px solid;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 242, 254, 0.35);
+            color: #0b0f19;
         }
 
         .footer-text {
-            position: absolute;
-            right: 40px;
-            bottom: 20px;
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 11px;
-            text-align: right;
+            margin-top: 30px;
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .alert-custom {
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            font-weight: 500;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="main-card">
-        <div class="header">
-            <img src="/images/logo-2.png" alt="720tec Logo">
-            <h2>Mantenimiento Proactivo</h2>
-            <p>Asignación de Tareas Recurrentes</p>
-        </div>
+    <div class="container d-flex justify-content-center">
+        <div class="form-card">
+            <div class="brand-header">
+                <h1><i class="fa-solid fa-layer-group"></i> 720tec Portal</h1>
+                <p>Sistema Híbrido de Mantenimiento Preventivo</p>
+            </div>
 
-        <div class="form-section">
             <?php if (isset($_GET['status'])): ?>
                 <?php if ($_GET['status'] == 'success'): ?>
-                    <div class="alert-custom" style="background: #e7faf3; color: #008a52; border-color: #008a52;">✅ Tarea
-                        registrada correctamente.</div>
-                <?php else: ?>
-                    <div class="alert-custom" style="background: #fff5f5; color: #d32f2f; border-color: #d32f2f;">❌ Error en el
-                        registro (Cód: <?= htmlspecialchars($_GET['msg'] ?? 'Error') ?>).</div>
+                    <div class="alert alert-success alert-custom bg-success-subtle text-success border-success-subtle"
+                        role="alert">
+                        <i class="fa-solid fa-circle-check"></i> ¡Tarea registrada exitosamente en SharePoint Online!
+                    </div>
+                <?php elseif ($_GET['status'] == 'error'): ?>
+                    <div class="alert alert-danger alert-custom bg-danger-subtle text-danger border-danger-subtle" role="alert">
+                        <i class="fa-solid fa-circle-xmark"></i> Error en la operación:
+                        <?= htmlspecialchars($_GET['msg'] ?? 'Unknown') ?>
+                    </div>
                 <?php endif; ?>
             <?php endif; ?>
 
             <form action="guardar_nueva.php" method="POST">
                 <div class="mb-4">
-                    <label class="form-label">Título de la Actividad</label>
-                    <input type="text" name="titulo" class="form-control" placeholder="Nombre descriptivo de la tarea"
-                        required>
+                    <label class="form-label">Título de la Tarea / Incidencia</label>
+                    <input type="text" name="titulo" class="form-control"
+                        placeholder="Ej: Revisión Mensual de Servidores NAS" required>
                 </div>
 
-                <div class="row mb-4">
-                    <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
                         <label class="form-label">Prioridad</label>
-                        <select name="prioridad" class="form-select">
-                            <?php foreach ($opciones_prioridad as $opt): ?>
-                                <option value="<?= $opt ?>"><?= $opt ?></option>
+                        <select name="prioridad" class="form-select" required>
+                            <option value="" disabled selected>Seleccione...</option>
+                            <?php foreach ($opciones_prioridad as $op): ?>
+                                <option value="<?= htmlspecialchars($op) ?>"><?= htmlspecialchars($op) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Impacto</label>
-                        <select name="impacto" class="form-select">
-                            <?php foreach ($opciones_impacto as $opt): ?>
-                                <option value="<?= $opt ?>"><?= $opt ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Periodicidad</label>
-                        <select name="periodicidad" class="form-select">
-                            <?php foreach ($opciones_periodicidad as $opt): ?>
-                                <option value="<?= $opt ?>"><?= $opt ?></option>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Impacto del Sistema</label>
+                        <select name="impacto" class="form-select" required>
+                            <option value="" disabled selected>Seleccione...</option>
+                            <?php foreach ($opciones_impacto as $op): ?>
+                                <option value="<?= htmlspecialchars($op) ?>"><?= htmlspecialchars($op) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                 </div>
 
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <label class="form-label">Fecha de Creación</label>
-                        <input type="date" name="fecha_creacion" class="form-control" value="<?= $fecha_hoy ?>"
-                            readonly>
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Periodicidad</label>
+                        <select name="periodicidad" class="form-select" required>
+                            <option value="" disabled selected>Seleccione...</option>
+                            <?php foreach ($opciones_periodicidad as $op): ?>
+                                <option value="<?= htmlspecialchars($op) ?>"><?= htmlspecialchars($op) ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Fecha Vencimiento (+7 días)</label>
-                        <input type="date" name="fecha_vencimiento" class="form-control"
-                            value="<?= $fecha_vencimiento ?>">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">¿Tarea Completada?</label>
+                        <select name="completada" class="form-select" required>
+                            <option value="" disabled selected>Seleccione...</option>
+                            <?php foreach ($opciones_completada as $op): ?>
+                                <option value="<?= htmlspecialchars($op) ?>"><?= htmlspecialchars($op) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Fecha de Creación</label>
+                        <input type="datetime-local" name="fecha_creacion" class="form-control"
+                            value="<?= date('Y-m-d\TH:i') ?>" required>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Fecha de Vencimiento</label>
+                        <input type="datetime-local" name="fecha_vencimiento" class="form-control" required>
                     </div>
                 </div>
 
