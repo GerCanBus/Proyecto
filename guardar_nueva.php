@@ -8,32 +8,85 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    // Separar nombre y email del técnico seleccionado
-    $datos_tecnico = explode('|', $_POST['tecnico_data']);
+    $id_tarea = $_POST['id_tarea'] ?? '';
+    $completada = $_POST['completada'];
+    $observaciones = $_POST['observaciones'] ?? '';
 
-    // Recoger fechas del formulario
-    $creacion = $_POST['fecha_creacion'];
-    $vencimiento = $_POST['fecha_vencimiento'];
+    // DECISIÓN DE ACCIÓN: ¿Actualizar tarea existente o Crear una nueva actividad?
+    if (!empty($id_tarea)) {
 
-    $fields = [
-        'Title' => $_POST['titulo'],
-        'Prioridad' => $_POST['prioridad'],
-        'Impacto' => $_POST['impacto'],
-        'Periodicidad' => $_POST['periodicidad'],
-        'Completada' => $_POST['completada'], // SE AÑADE EL RECOJO DINÁMICO DE ESTA COLUMNA CON RESPECTO A SHAREPOINT
-        'Documentacion' => $_POST['documentacion'] ?? '',
-        'Observaciones' => $_POST['observaciones'] ?? '',
-        'Tecnico' => $datos_tecnico[0],
-        'Realiza' => $datos_tecnico[1],
-        'FechaCreacion' => $creacion,
-        'FechaVencimiento' => $vencimiento
-    ];
+        // --- MODO TÉCNICO: ACTUALIZACIÓN INMUTABLE ---
+        // Como deshabilitamos el campo 'periodicidad' en HTML, recuperamos el valor usando el campo oculto '_hidden'
+        $periodicidad = $_POST['periodicidad_hidden'] ?? '';
+        $proxima_revision = null;
 
-    $url = "https://graph.microsoft.com/v1.0/sites/" . SITE_ID . "/lists/" . LIST_ID . "/items";
-    $payload = json_encode(['fields' => $fields], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        if ($completada === 'Sí') {
+            $fecha_base = new DateTime(); // Hoy
+            $p_lower = mb_strtolower($periodicidad, 'UTF-8');
 
+            if (str_contains($p_lower, 'diaria')) {
+                $fecha_base->modify('+1 day');
+            } elseif (str_contains($p_lower, 'semanal')) {
+                $fecha_base->modify('+7 days');
+            } elseif (str_contains($p_lower, 'mensual')) {
+                $fecha_base->modify('+1 month');
+            } elseif (str_contains($p_lower, 'trimestral')) {
+                $fecha_base->modify('+3 months');
+            } elseif (str_contains($p_lower, 'semestral')) {
+                $fecha_base->modify('+6 months');
+            } elseif (str_contains($p_lower, 'anual')) {
+                $fecha_base->modify('+1 year');
+            }
+
+            $proxima_revision = $fecha_base->format('Y-m-d');
+        }
+
+        // Estructura Inmutable: ÚNICAMENTE enviamos a SharePoint los dos campos autorizados
+        $fields = [
+            'Completada' => $completada,
+            'Observaciones' => $observaciones
+        ];
+
+        if ($proxima_revision !== null) {
+            $fields['ProximaRevision'] = $proxima_revision;
+        }
+
+        $url = "https://graph.microsoft.com/v1.0/sites/" . SITE_ID . "/lists/" . LIST_ID . "/items/" . $id_tarea . "/fields";
+        $payload = json_encode($fields, JSON_UNESCAPED_UNICODE);
+        $method = 'PATCH';
+
+    } else {
+
+        // --- MODO ADMINISTRADOR: CREAR NUEVA ACTIVIDAD ---
+        $datos_tecnico = explode('|', $_POST['tecnico_data']);
+        $creacion = $_POST['fecha_creacion'];
+        $periodicidad = $_POST['periodicidad'];
+
+        $fields = [
+            'Title' => $_POST['titulo'],
+            'Prioridad' => $_POST['prioridad'],
+            'Impacto' => $_POST['impacto'],
+            'Periodicidad' => $periodicidad,
+            'Completada' => $completada,
+            'Observaciones' => $observaciones,
+            'Documentacion' => $_POST['documentacion'] ?? '',
+            'Tecnico' => $datos_tecnico[0],
+            'Realiza' => $datos_tecnico[1],
+            'FechaCreacion' => $creacion
+        ];
+
+        $url = "https://graph.microsoft.com/v1.0/sites/" . SITE_ID . "/lists/" . LIST_ID . "/items";
+        $payload = json_encode(['fields' => $fields], JSON_UNESCAPED_UNICODE);
+        $method = 'POST';
+    }
+
+    // Ejecutar petición hacia Microsoft Graph
     $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_POST, true);
+    if ($method === 'POST') {
+        curl_setopt($ch, CURLOPT_POST, true);
+    } else {
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
+    }
     curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
@@ -41,16 +94,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'Content-Type: application/json; charset=utf-8'
     ]);
 
-    $response = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $res = curl_exec($ch);
+    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    if ($http_code == 201 || $http_code == 200) {
+    if ($code == 201 || $code == 200 || $code == 204) {
         header("Location: index.php?status=success");
     } else {
-        $err_data = json_decode($response, true);
-        $msg = $err_data['error']['message'] ?? 'GraphError';
-        header("Location: index.php?status=error&msg=" . urlencode($msg));
+        header("Location: index.php?status=error&msg=" . $code);
     }
     exit();
 }
