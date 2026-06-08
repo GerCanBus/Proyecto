@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarjetas de Defensa ASIR - Texto de Exposición</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Poppins:wght@700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bgDark: '#02070f',
+                        panelDark: '#011222',
+                        accentCyan: '#00f0ff'
+                    },
+                    fontFamily: {
+                        sans: ['Lato', 'sans-serif'],
+                        title: ['Poppins', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Bloqueo estricto de scroll para el portátil */
+        html, body {
+            height: 100vh;
+            overflow: hidden;
+            background-color: #02070f;
+        }
+        .glow-text {
+            color: #00f0ff;
+            text-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+        }
+        .progress-transition {
+            transition: width 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="text-gray-100 flex flex-col justify-between">
+
+    <header class="h-[8vh] min-h-[50px] border-b border-gray-800 bg-bgDark px-8 flex items-center justify-between z-50">
+        <div class="flex items-center gap-3">
+            <span class="text-accentCyan font-title font-bold text-lg tracking-wider">720TEC • GUION DE EXPOSICIÓN</span>
+            <span class="text-xs text-gray-500 font-mono hidden sm:inline">| PROYECTO FINAL ASIR 2026</span>
+        </div>
+        <div class="text-xs font-mono text-gray-400 bg-panelDark border border-gray-700 px-3 py-1 rounded-lg">
+            <i class="fa-solid fa-desktop text-accentCyan mr-1.5"></i> Vista de Directo para Portátil
+        </div>
+    </header>
+
+    <main class="h-[84vh] px-8 py-4 flex flex-col justify-center">
+        <div id="card-wrapper" class="h-full flex flex-col justify-between max-w-7xl mx-auto w-full bg-panelDark border border-gray-800 rounded-2xl p-8 relative overflow-hidden shadow-2xl">
+            </div>
+    </main>
+
+    <footer class="h-[8vh] min-h-[50px] border-t border-gray-800 bg-bgDark px-8 flex items-center justify-between relative">
+        <div class="absolute top-0 left-0 h-1 bg-gray-800 w-full">
+            <div id="indicator-bar" class="h-full bg-accentCyan progress-transition" style="width: 5.88%;"></div>
+        </div>
+
+        <button onclick="prevSlide()" class="px-6 py-2 bg-panelDark hover:bg-accentCyan hover:text-bgDark border border-gray-700 hover:border-accentCyan rounded-xl font-bold text-sm tracking-wide transition-all flex items-center gap-2 text-accentCyan">
+            <i class="fa-solid fa-arrow-left"></i> ANTERIOR
+        </button>
+
+        <div class="text-center font-mono">
+            <span id="slide-num" class="text-accentCyan font-extrabold text-2xl">01</span>
+            <span class="text-gray-500 text-lg"> / 17</span>
+            <span id="slide-title-bottom" class="text-xs text-gray-500 uppercase tracking-widest block mt-0.5">Portada</span>
+        </div>
+
+        <button onclick="nextSlide()" class="px-6 py-2 bg-panelDark hover:bg-accentCyan hover:text-bgDark border border-gray-700 hover:border-accentCyan rounded-xl font-bold text-sm tracking-wide transition-all flex items-center gap-2 text-accentCyan">
+            SIGUIENTE <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </footer>
+
+    <script>
+        // Mazo de datos con el texto estricto integrado técnicamente
+        const speechData = [
+            {
+                num: 1,
+                title: "Portada y Presentación",
+                speech: "Buenos días, miembros del tribunal. Soy Gerardo Cano y presento la defensa de mi Proyecto Final de ASIR titulado 'Sistema Híbrido de Gestión y Automatización Proactiva IT'. Este desarrollo ha sido tutorizado en el entorno empresarial por Álex Reguera, de la firma 720tec S.L.L., y en el ámbito académico por mi tutora Ángela Bañuls, del IES Caminàs, durante este año 2026."
+            },
+            {
+                num: 2,
+                title: "Introducción al Proyecto",
+                speech: "El objetivo principal es resolver la dispersión de datos técnicos y optimizar los flujos operativos de soporte. Para ello, se ha propuesto e implementado una arquitectura totalmente desacoplada, donde se independiza por completo la interfaz de usuario de la capa de almacenamiento final. La solución se basa en un Middleware desarrollado en PHP que se comunica de forma asíncrona mediante llamadas REST hacia la API de Microsoft Graph, asegurando que los datos capturados persistan de forma estructurada en SharePoint Cloud."
+            },
+            {
+                num: 3,
+                title: "La Empresa: 720tec",
+                speech: "720tec es una consultora e ingeniería tecnológica especializada en el diseño, securización y monitorización de entornos industriales y portuarios complejos. Al administrar infraestructuras críticas y de alta disponibilidad, la seguridad informática y la resiliencia no son añadidos opcionales, sino el pilar de negocio que garantiza la continuidad de operaciones frente a cualquier vector de fallo."
+            },
+            {
+                num: 4,
+                title: "Entorno del Departamento",
+                speech: "El departamento técnico se sistemas gestiona un entorno informático híbrido donde coexisten puestos cliente basados en Windows con servidores de producción e infraestructura de red crítica bajo Linux. El equipo cuenta con una fuerte cultura de automatización y desarrollo de scripts propios, lo que hacía necesario crear una herramienta interna a medida que complementara las plataformas comerciales de gestión como Autotask."
+            },
+            {
+                num: 5,
+                title: "Necesidades Operativas",
+                speech: "Se identificamos tres problemas: silos de información aislada, retrasos en el reporte de campo y una gestión reactiva de los fallos. Las necesidades obligaban a centralizar los registros en una fuente única de verdad, o Single Source of Truth, accesible desde terminales móviles en planta industrial. Además, se necesitaba garantizar la trazabilidad inalterable de los históricos para cumplir estrictamente con las auditorías y los acuerdos de nivel de servicio, o SLA."
+            },
+            {
+                num: 6,
+                title: "Justificación Técnica",
+                speech: "El desarrollo de un Middleware propio se justifica por tres motivos. Primero, otorga soberanía tecnológica absoluta sobre nuestros datos técnicos. Segundo, cubre las limitaciones de las herramientas SaaS propietarias como Autotask a la hora de orquestar eventos de manera automatización en servidores Linux. Y tercero, se optimiza el retorno de la inversión, o ROI, al erradicar por completo las horas muertas que los técnicos dedicaban al reporte administrativo manual."
+            },
+            {
+                num: 7,
+                title: "Presupuesto e Inversión",
+                speech: "La viabilidad financiera del proyecto es excelente ya que el coste de despliegue directo de la infraestructura ha sido de cero euros. Se ha alojado el sistema aprovechando la capa gratuita, o Free Tier, de Amazon Web Services y hemos reutilizado el licenciamiento Microsoft 365 Business Premium que la empresa ya tiene activo. La única inversión real ha sido el coste de la ingeniería de software, calculando 40 horas de desarrollo a un precio de mercado de 18 euros la hora, resultando un total de 720 euros."
+            },
+            {
+                num: 8,
+                title: "Gestión de Alternativas",
+                speech: "Ae evalúa una Alternativa No-Code basada en Microsoft Forms conectado a hojas de cálculo de Excel Online. Se desestima debido a su rigidez, la falta de validación de tipos y el alto riesgo de corrupción de datos en accesos concurrentes. En su lugar se elije la arquitectura híbrida con un Middleware en PHP alojado en una VPC Isolated, o Red Privada Virtual Aislada, garantizando seguridad perimetral, control absoluto del código y elasticidad ante picos de carga."
+            },
+            {
+                num: 9,
+                title: "Definición de la Solución",
+                speech: "La solución implementa una arquitectura clásica de tres capas. La capa de presentación es una aplicación web responsive construida con Bootstrap 5. La capa de lógica se ejecuta en un servidor cloud y la capa de persistencia explota el almacenamiento en la nube de Microsoft. Toda la información en tránsito viaja cifrada de extremo a extremo mediante el protocolo seguro TLS 1.3, y el control de accesos se delega en las identidades centralizadas de Azure Active Directory."
+            },
+            {
+                num: 10,
+                title: "Recursos Cloud: AWS EC2",
+                speech: "Para el servidor de aplicaciones se desplega una instancia EC2 de Amazon Web Services con el sistema operativo Debian 12 Bookworm configurado en modo Headless, es decir, sin entorno gráfico para reducir la superficie de ataque y optimizar recursos. He aplicado políticas estrictas de Hardening o endurecimiento: el Security Group actúa como firewall perimetral bloqueando todo el tráfico por defecto bajo una política Deny-All, y el acceso administrativo SSH está limitado a nuestra IP corporativa y protegido mediante claves asimétricas RSA de 4096 bits."
+            },
+            {
+                num: 11,
+                title: "Gobernanza en Azure Entra ID",
+                speech: "La interconexión entre AWS y Microsoft 365 no utiliza credenciales estáticas expuestas a filtraciones. Se registró la aplicación en el Tenant de la empresa bajo un modelo Single-Tenant y se configuró el flujo de autorización OAuth 2.0 Client Credentials. A través de este flujo, el servidor negocia e intercambia tokens firmados criptográficamente, conocidos como tokens JWT o Bearer, aplicando el principio de menor privilegio mediante el alcance explícito de lectura y escritura de Graph."
+            },
+            {
+                num: 12,
+                title: "Lógica del Middleware PHP",
+                speech: "El Backend programado en PHP 8.x actúa como el motor inteligente de seguridad. Para garantizar la fluidez de uso, realiza el envío de datos de manera asíncrona mediante la librería nativa cURL, evitando bloquear la pantalla del operario. El código incluye funciones de sanitización de datos de entrada para neutralizar ataques de inyección de scripts o XSS, y cuenta con un mecanismo de caché local que almacena el token JWT durante sus 60 minutos de validez para evitar peticiones redundantes de autenticación."
+            },
+            {
+                num: 13,
+                title: "SharePoint como Motor DB",
+                speech: "Se usan las listas estructuradas de SharePoint como una base de datos no relacional a través de la API REST. Esto aporta ventajas de cumplimiento normativo inmediatas sin necesidad de administrar un servidor SQL local. Cada registro guardado valida estrictamente los tipos de datos introducidos, se vincula mediante firmas digitales al usuario real del Directorio Activo, y cuenta con una trazabilidad forense inalterable gracias al control automático de versionado histórico de SharePoint."
+            },
+            {
+                num: 14,
+                title: "Orquestación Serverless",
+                speech: "La capa de automatización es reactiva y está guiada por eventos mediante flujos de Power Automate que se disparan en el mismo instante en que se crea un elemento en la lista. El flujo utiliza nodos lógicos condicionales de tipo Switch para calcular matemáticamente las fechas de los próximos mantenimientos. Además, implementa la directiva 'Delay Until' para pausar el proceso de forma pasiva en los servidores de Microsoft, consumiendo un cero por ciento de ciclos de CPU locales hasta que llegue la fecha del aviso."
+            },
+            {
+                num: 15,
+                title: "Notificaciones Duales",
+                speech: "Para asegurar la proactividad del sistema y evitar descuidos técnicos en infraestructuras críticas, se ha diseñado un mecanismo de alertas con redundancia dual. Por un lado, el flujo invoca un Webhook para inyectar una alerta de mensajería instantánea inmediata en los canales operativos de Microsoft Teams. Por otro lado, envía una notificación formal por correo electrónico a través de Outlook utilizando plantillas formateadas en HTML que implementan códigos cromáticos de urgencia, tiñendo el aviso en rojo si faltan menos de 24 horas para el vencimiento."
+            },
+            {
+                num: 16,
+                title: "Conclusiones y Futuro",
+                speech: "En conclusión, el proyecto cumple con creces los objetivos técnicos planteados: digitaliza el cien por cien de las tareas de campo, elimina los silos de datos y erradica el error administrativo. El sistema ha consolidado de forma práctica competencias clave de ASIR en redes, seguridad y cloud. Además, la hoja de ruta futura contempla la integración nativa del protocolo estándar SNMP para realizar tareas de telemetría, permitiendo que el Middleware capture métricas de rendimiento en tiempo real directamente desde routers, switches e IoT industrial."
+            },
+            {
+                num: 17,
+                title: "Cierre y Preguntas",
+                speech: "Con esto concluyo la exposición de mi proyecto de fin de ciclo. Agradezco sinceramente la atención prestada por los miembros de este tribunal técnico y quedo a su entera disposición para responder a sus preguntas, defensas de código o cualquier aclaración que estimen oportuna. Muchas gracias."
+            }
+        ];
+
+        let activeIndex = 0;
+
+        function loadCardContent(index) {
+            const currentData = speechData[index];
+            const container = document.getElementById('card-wrapper');
+            
+            // Inyección del layout adaptado
+            container.innerHTML = `
+                <div class="absolute -right-8 -bottom-12 font-title font-extrabold text-[15rem] text-slate-900/40 select-none pointer-events-none">
+                    ${currentData.num.toString().padStart(2, '0')}
+                </div>
+
+                <div class="border-b border-gray-800 pb-4 flex items-center justify-between relative z-10">
+                    <div class="flex items-center gap-4">
+                        <span class="bg-accentCyan/10 border border-accentCyan/30 text-accentCyan font-mono text-sm px-4 py-1.5 rounded-full font-bold uppercase tracking-widest">
+                            DIAPOSITIVA ${currentData.num.toString().padStart(2, '0')}
+                        </span>
+                        <h2 class="font-title font-bold text-3xl text-white tracking-wide">${currentData.title}</h2>
+                    </div>
+                    <span class="text-xs text-gray-500 font-mono tracking-widest">TEXTO EXACTO DE DEFENSA</span>
+                </div>
+
+                <div class="flex-grow flex items-center justify-start py-6 relative z-10">
+                    <p class="text-2xl sm:text-3xl md:text-4xl text-gray-100 font-light leading-relaxed tracking-wide text-left max-w-6xl">
+                        "${currentData.speech}"
+                    </p>
+                </div>
+            `;
+
+            // Actualizar estado de los marcadores del footer
+            document.getElementById('slide-num').innerText = currentData.num.toString().padStart(2, '0');
+            document.getElementById('slide-title-bottom').innerText = currentData.title;
+            
+            const progressPercent = (currentData.num / speechData.length) * 100;
+            document.getElementById('indicator-bar').style.width = `${progressPercent}%`;
+            
+            activeIndex = index;
+        }
+
+        function nextSlide() {
+            if (activeIndex < speechData.length - 1) {
+                loadCardContent(activeIndex + 1);
+            } else {
+                loadCardContent(0); // Bucle al inicio
+            }
+        }
+
+        function prevSlide() {
+            if (activeIndex > 0) {
+                loadCardContent(activeIndex - 1);
+            } else {
+                loadCardContent(speechData.length - 1); // Bucle al final
+            }
+        }
+
+        // Asignación de atajos de teclado (Espacio y flechas)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            }
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Carga inicial
+        loadCardContent(0);
+    </script>
+</body>
+</html>

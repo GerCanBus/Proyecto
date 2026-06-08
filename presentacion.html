@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defensa ASIR - Gerardo Cano - 720tec</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Lato:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --navy: #001929;
+            --cyan: #08d4ff;
+            --white: #ffffff;
+            --gray: #94a3b8;
+            --glow: rgba(8, 212, 255, 0.3);
+            --red: #ef4444;
+            --green: #22c55e;
+            --azure: #0078d4;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background-color: #020912;
+            color: var(--white);
+            font-family: 'Lato', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        #presentation-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: var(--navy);
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 4.5vh 5.5vw 13vh 5.5vw;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(30px);
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out, visibility 0.4s;
+            z-index: 1;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+            z-index: 2;
+        }
+
+        #presentation-container::before {
+            content: '';
+            position: absolute;
+            top: -10%;
+            right: -10%;
+            width: 50%;
+            height: 70%;
+            background: radial-gradient(circle, rgba(8, 212, 255, 0.08) 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 5.2vh;
+            line-height: 1.1;
+            margin-bottom: 2.2vh;
+            border-left: 1.2vh solid var(--cyan);
+            padding-left: 2.2vh;
+        }
+
+        .slide-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 4.6vh;
+            color: var(--cyan);
+            margin-bottom: 2.8vh;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+            width: 100%;
+        }
+
+        p, li {
+            font-size: 3vh;
+            line-height: 1.35;
+            margin-bottom: 1.8vh;
+            color: var(--white);
+        }
+
+        ul { list-style: none; }
+        li {
+            position: relative;
+            padding-left: 6vh;
+            margin-bottom: 2vh;
+        }
+        li::before {
+            content: "\f0a9";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: var(--cyan);
+            font-size: 2.8vh;
+            top: 0.3vh;
+        }
+
+        .highlight { color: var(--cyan); font-weight: 700; }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 0.6fr;
+            gap: 4vw;
+            flex-grow: 1;
+            align-items: center;
+        }
+
+        /* PILLARS GRAPHIC (SLIDE 3) */
+        .pillar-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.8vh;
+            width: 100%;
+        }
+
+        .pillar-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--cyan);
+            border-radius: 12px;
+            padding: 1.8vh;
+            display: flex;
+            align-items: center;
+            gap: 2vh;
+            box-shadow: 0 0 15px var(--glow);
+            transition: transform 0.3s ease;
+        }
+
+        .pillar-card i {
+            font-size: 3.5vh;
+            color: var(--cyan);
+            width: 5vh;
+            text-align: center;
+        }
+
+        .pillar-card span {
+            font-size: 2.2vh;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* STANDARD GRAPH BOX */
+        .graph-box {
+            background: rgba(8, 212, 255, 0.03);
+            border: 2px solid var(--cyan);
+            border-radius: 15px;
+            padding: 2vh;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 35vh;
+            width: 100%;
+        }
+
+        .rect-item {
+            background: var(--navy);
+            border: 2px solid var(--cyan);
+            padding: 1.5vh;
+            width: 100%;
+            margin: 0.8vh 0;
+            border-radius: 8px;
+            font-size: 2vh;
+            font-weight: bold;
+        }
+
+        .flow-arrow { color: var(--cyan); font-size: 3.5vh; margin: 0.2vh 0; }
+
+        /* COMPARATIVE GRAPHIC (SLIDE 5) */
+        .vs-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            gap: 1.2vh;
+        }
+        .vs-card {
+            width: 100%;
+            padding: 1.8vh;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8vh;
+            border: 2px solid transparent;
+        }
+        .vs-card.problem {
+            background: rgba(239, 68, 68, 0.05);
+            border-color: #ef4444;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+        }
+        .vs-card.solution {
+            background: rgba(34, 197, 94, 0.05);
+            border-color: #22c55e;
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
+        }
+        .vs-header {
+            display: flex;
+            align-items: center;
+            gap: 1.2vh;
+            font-size: 2vh;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .vs-header i { font-size: 2.2vh; }
+        .vs-card.problem .vs-header { color: #ef4444; }
+        .vs-card.solution .vs-header { color: #22c55e; }
+        .vs-subtext {
+            font-size: 1.5vh;
+            color: var(--gray);
+            line-height: 1.4;
+            text-align: left;
+        }
+        .vs-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.3vh 0.8vh;
+            border-radius: 4px;
+            font-size: 1.2vh;
+            font-weight: bold;
+            margin-left: auto;
+        }
+        .vs-divider {
+            color: var(--cyan);
+            font-weight: bold;
+            font-size: 2.2vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+        .vs-divider::before, .vs-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(8, 212, 255, 0.2);
+            margin: 0 15px;
+        }
+
+        /* BENEFIT MATRIX GRAPHIC (SLIDE 6) */
+        .benefit-matrix {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5vh;
+            width: 100%;
+        }
+        .matrix-node {
+            background: linear-gradient(135deg, rgba(8, 212, 255, 0.02) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 2px solid rgba(8, 212, 255, 0.2);
+            border-left: 6px solid var(--cyan);
+            border-radius: 8px;
+            padding: 1.5vh 2vh;
+            display: flex;
+            align-items: center;
+            gap: 2vh;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+        .matrix-node:hover {
+            border-color: var(--cyan);
+            box-shadow: 0 0 20px var(--glow);
+            transform: translateX(5px);
+        }
+        .matrix-icon {
+            font-size: 3.2vh;
+            color: var(--cyan);
+            background: rgba(8, 212, 255, 0.1);
+            width: 6.5vh;
+            height: 6.5vh;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 1px solid rgba(8, 212, 255, 0.3);
+        }
+        .matrix-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3vh;
+            text-align: left;
+        }
+        .matrix-title {
+            font-size: 1.8vh;
+            font-weight: 700;
+            color: var(--white);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .matrix-desc {
+            font-size: 1.4vh;
+            color: var(--gray);
+            line-height: 1.3;
+        }
+
+        /* IMPROVED ALTERNATIVES GRAPHIC (SLIDE 8) */
+        .decision-board {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.2vh;
+            width: 100%;
+        }
+        .option-panel {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 1.8vh;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6vh;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .option-panel.discarded {
+            border-color: rgba(239, 68, 68, 0.3);
+            opacity: 0.6;
+        }
+        .option-panel.selected {
+            border: 2px solid var(--cyan);
+            background: rgba(8, 212, 255, 0.05);
+            box-shadow: 0 0 20px var(--glow);
+        }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.7vh;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .panel-tags {
+            display: flex;
+            gap: 0.6vh;
+            margin-top: 0.4vh;
+        }
+        .tag-small {
+            font-size: 1vh;
+            padding: 0.2vh 0.6vh;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.1);
+            color: var(--gray);
+            font-weight: bold;
+        }
+        .selected .tag-small {
+            background: var(--cyan);
+            color: var(--navy);
+        }
+        .decision-icon { font-size: 2.8vh; }
+        .discarded .decision-icon { color: var(--red); }
+        .selected .decision-icon { color: var(--green); }
+
+        /* THREE-TIER ARCHITECTURE GRAPHIC (SLIDE 9) */
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.2vh;
+            width: 100%;
+        }
+        .arch-step {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1.5px solid rgba(8, 212, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.3vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        .arch-step.active {
+            border-color: var(--cyan);
+            box-shadow: 0 0 15px var(--glow);
+            background: rgba(8, 212, 255, 0.04);
+        }
+        .arch-label {
+            font-size: 1vh;
+            color: var(--cyan);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 0.4vh;
+            letter-spacing: 1.5px;
+        }
+        .arch-content {
+            display: flex;
+            align-items: center;
+            gap: 1vh;
+            font-size: 1.7vh;
+            font-weight: 700;
+        }
+        .arch-content i { font-size: 2vh; color: var(--cyan); }
+        .arch-link {
+            color: var(--cyan);
+            font-size: 1.5vh;
+            opacity: 0.6;
+        }
+
+        /* SERVER MONITOR (SLIDE 10) */
+        .server-monitor {
+            background: #010c15;
+            border: 2px solid var(--cyan);
+            border-radius: 15px;
+            padding: 2.5vh;
+            width: 100%;
+            box-shadow: 0 0 30px rgba(8, 212, 255, 0.15);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .monitor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(8, 212, 255, 0.3);
+            padding-bottom: 1.2vh;
+            margin-bottom: 1.8vh;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--green);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--green);
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .spec-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.2vh;
+            font-size: 1.5vh;
+        }
+        .spec-label { color: var(--cyan); font-weight: bold; }
+        .spec-value { color: var(--white); }
+        .security-badge {
+            background: rgba(8, 212, 255, 0.1);
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            padding: 0.8vh;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.3vh;
+            margin-top: 1.8vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* IDENTITY AUTH FLOW (SLIDE 11) */
+        .auth-flow-dashboard {
+            width: 100%;
+            background: #010b1a;
+            border: 2px solid var(--azure);
+            border-radius: 20px;
+            padding: 2.2vh;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2vh;
+            box-shadow: 0 0 40px rgba(0, 120, 212, 0.2);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .auth-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--azure);
+            font-size: 1.3vh;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid rgba(0, 120, 212, 0.3);
+            padding-bottom: 0.8vh;
+        }
+        .auth-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1vh;
+        }
+        .auth-box {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(0, 120, 212, 0.3);
+            padding: 1vh;
+            border-radius: 10px;
+            position: relative;
+        }
+        .auth-box::after {
+            content: '⬇';
+            position: absolute;
+            bottom: -1.5vh;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--azure);
+            font-size: 1.1vh;
+            opacity: 0.5;
+            z-index: 10;
+        }
+        .auth-box:last-child::after { display: none; }
+        .box-title { font-size: 1vh; color: var(--gray); margin-bottom: 0.3vh; text-transform: uppercase; }
+        .box-data { font-size: 1.3vh; color: var(--white); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .token-glow {
+            border-color: var(--cyan);
+            background: rgba(8, 212, 255, 0.05);
+            box-shadow: 0 0 20px rgba(8, 212, 255, 0.1);
+        }
+        .scope-tag {
+            background: var(--green);
+            color: var(--navy);
+            padding: 0.3vh 0.8vh;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1.1vh;
+            display: inline-block;
+            margin-top: 0.4vh;
+        }
+
+        /* PIPELINE GRAPHIC (SLIDE 12) */
+        .logic-pipeline {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1.8vh;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .pipeline-step {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1.5px solid rgba(8, 212, 255, 0.25);
+            padding: 1.6vh;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 2vh;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .pipeline-step::after {
+            content: '⬇';
+            position: absolute;
+            bottom: -2.2vh;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--cyan);
+            font-size: 1.6vh;
+            opacity: 0.7;
+        }
+        .pipeline-step:last-child::after { display: none; }
+        .step-icon-box {
+            width: 5.5vh;
+            height: 5.5vh;
+            background: rgba(8, 212, 255, 0.1);
+            border: 1px solid rgba(8, 212, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--cyan);
+            font-size: 2.4vh;
+            flex-shrink: 0;
+        }
+        .step-text-nodes { display: flex; flex-direction: column; gap: 0.2vh; }
+        .step-meta-tag { font-size: 1vh; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; }
+        .step-core-action { font-size: 1.7vh; color: var(--white); font-weight: bold; }
+        .step-status-badge {
+            margin-left: auto;
+            font-size: 1vh;
+            padding: 0.4vh 1vh;
+            border-radius: 4px;
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--green);
+            border: 1px solid var(--green);
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* NUEVO NUEVO GRÁFICO AVANZADO DIAPOSITIVA 13: ESQUEMA BASE DATOS */
+        .db-schema-panel {
+            width: 100%;
+            background: #010b1a;
+            border: 2px solid var(--cyan);
+            border-radius: 20px;
+            padding: 2.5vh;
+            display: flex;
+            flex-direction: column;
+            gap: 2vh;
+            box-shadow: 0 0 30px rgba(8, 212, 255, 0.15);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .schema-header {
+            border-bottom: 1px solid rgba(8, 212, 255, 0.3);
+            padding-bottom: 1vh;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .schema-title { font-size: 1.4vh; color: var(--cyan); text-transform: uppercase; font-weight: bold; }
+        .schema-table {
+            display: flex;
+            flex-direction: column;
+            gap: 1vh;
+        }
+        .table-row {
+            display: flex;
+            align-items: center;
+            gap: 1.5vh;
+            padding: 1vh;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .type-icon { color: var(--gray); font-size: 1.5vh; width: 2.5vh; text-align: center; }
+        .field-name { font-size: 1.4vh; color: var(--white); flex-grow: 1; }
+        .field-type { font-size: 1.1vh; color: var(--azure); font-weight: bold; }
+        .version-badge {
+            margin-top: 1vh;
+            background: rgba(8, 212, 255, 0.1);
+            border: 1px dashed var(--cyan);
+            padding: 1vh;
+            border-radius: 8px;
+            font-size: 1.2vh;
+            color: var(--gray);
+            text-align: center;
+        }
+
+        /* --- NUEVOS ESTILOS AISLADOS EXCLUSIVOS PARA EL DIAGRAMA DE LA DIAPOSITIVA 14 --- */
+        .premium-workflow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.8vh;
+            width: 100%;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .wf-node-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1.5px solid rgba(8, 212, 255, 0.25);
+            padding: 1.5vh 2vh;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 2.5vh;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .wf-node-box::after {
+            content: '⬇';
+            position: absolute;
+            bottom: -2.4vh;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--cyan);
+            font-size: 1.8vh;
+            opacity: 0.7;
+        }
+        .wf-node-box:last-child::after { display: none; }
+        .wf-node-icon {
+            width: 6vh;
+            height: 6vh;
+            background: rgba(8, 212, 255, 0.1);
+            border: 1px solid var(--cyan);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--cyan);
+            font-size: 2.6vh;
+            flex-shrink: 0;
+            box-shadow: 0 0 10px rgba(8, 212, 255, 0.2);
+        }
+        .wf-node-texts { display: flex; flex-direction: column; text-align: left; }
+        .wf-node-meta { font-size: 1.1vh; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; }
+        .wf-node-title { font-size: 1.7vh; color: var(--white); font-weight: bold; }
+        .wf-node-badge {
+            margin-left: auto;
+            font-size: 1.1vh;
+            padding: 0.5vh 1.2vh;
+            border-radius: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* --- NUEVOS ESTILOS AISLADOS EXCLUSIVOS PARA LAS NOTIFICACIONES DE LA DIAPOSITIVA 15 --- */
+        .dual-notif-monitor {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5vh;
+            width: 100%;
+            font-family: 'Lato', sans-serif;
+        }
+        .mock-app-window {
+            background: #111b24;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .mock-app-window.teams-theme { border-top: 4px solid #6264a7; }
+        .mock-app-window.outlook-theme { border-top: 4px solid #0078d4; }
+        .window-topbar {
+            background: rgba(0,0,0,0.2);
+            padding: 0.8vh 1.5vh;
+            font-size: 1.3vh;
+            font-weight: bold;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 1vh;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .window-body { padding: 1.5vh 2vh; text-align: left; }
+        .teams-msg-bubble {
+            background: #201f1e;
+            border-radius: 0px 8px 8px 8px;
+            padding: 1.2vh 1.5vh;
+            border-left: 3px solid var(--cyan);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .teams-user { font-size: 1.3vh; color: #6264a7; font-weight: bold; margin-bottom: 0.4vh; }
+        .teams-text { font-size: 1.5vh; color: var(--white); line-height: 1.3; }
+        .outlook-mail {
+            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.02);
+            border-radius: 6px;
+            padding: 1.2vh;
+        }
+        .mail-header { font-size: 1.3vh; color: var(--gray); border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.6vh; margin-bottom: 0.6vh; }
+        .mail-subject { font-size: 1.5vh; font-weight: bold; color: var(--white); margin-bottom: 0.4vh; }
+        .mail-priority-line { display: flex; align-items: center; gap: 8px; font-size: 1.2vh; font-family: 'JetBrains Mono', monospace; color: var(--red); }
+
+        /* --- NUEVOS ESTILOS INTERACTIVOS PARA EL PANEL DE FUTURO DE LA DIAPOSITIVA 16 --- */
+        .success-panel-container {
+            width: 100%;
+            background: linear-gradient(145deg, #010f1c 0%, #001929 100%);
+            border: 2px solid var(--cyan);
+            border-radius: 20px;
+            padding: 2.5vh;
+            display: flex;
+            flex-direction: column;
+            gap: 2vh;
+            box-shadow: 0 0 30px var(--glow);
+            text-align: left;
+        }
+        .success-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(8, 212, 255, 0.2);
+            padding-bottom: 1.2vh;
+        }
+        .success-badge-premium {
+            background: var(--cyan);
+            color: var(--navy);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8vh;
+            font-weight: 800;
+            padding: 0.6vh 1.8vh;
+            border-radius: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px var(--cyan);
+        }
+        .success-metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5vh;
+            margin-top: 0.5vh;
+        }
+        .metric-sub-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(8, 212, 255, 0.15);
+            border-radius: 10px;
+            padding: 1.2vh;
+            display: flex;
+            align-items: center;
+            gap: 1.5vh;
+        }
+        .metric-sub-card i {
+            font-size: 2.5vh;
+            color: var(--cyan);
+        }
+        .metric-sub-texts {
+            display: flex;
+            flex-direction: column;
+        }
+        .metric-sub-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.8vh;
+            font-weight: bold;
+            color: var(--white);
+        }
+        .metric-sub-lbl {
+            font-size: 1.2vh;
+            color: var(--gray);
+            text-transform: uppercase;
+        }
+        .snmp-future-box {
+            background: rgba(8, 212, 255, 0.04);
+            border: 1px dashed var(--cyan);
+            border-radius: 10px;
+            padding: 1.5vh;
+            display: flex;
+            align-items: center;
+            gap: 1.5vh;
+        }
+        .snmp-future-box i {
+            font-size: 3vh;
+            color: var(--cyan);
+            animation: pulse-glow 2s infinite alternate;
+        }
+        @keyframes pulse-glow {
+            from { text-shadow: 0 0 2px var(--cyan); opacity: 0.6; }
+            to { text-shadow: 0 0 12px var(--cyan); opacity: 1; }
+        }
+
+        /* OVERLAYS & META */
+        .cover-meta {
+            background: rgba(255,255,255,0.05);
+            border: 1.5px solid var(--cyan);
+            padding: 2.5vh 3.5vw;
+            border-radius: 12px;
+            margin-top: 2vh;
+            display: inline-block;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 3vh;
+            right: 5.5vw;
+            display: flex;
+            gap: 1.5vw;
+            z-index: 100;
+        }
+        .btn {
+            background: transparent;
+            border: 2px solid var(--cyan);
+            color: var(--cyan);
+            padding: 1vh 2.2vw;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.8vh;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background: var(--cyan);
+            color: var(--navy);
+        }
+        .counter {
+            position: absolute;
+            bottom: 3.5vh;
+            left: 5.5vw;
+            font-size: 2.2vh;
+            color: var(--gray);
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+<div id="presentation-container">
+
+    <div class="slide active">
+        <div style="text-align: center; justify-content: center; height: 100%; display: flex; flex-direction: column; align-items: center;">
+            <h1>SISTEMA HÍBRIDO DE GESTIÓN Y<br>AUTOMATIZACIÓN PROACTIVA IT</h1>
+            <p style="font-size: 4vh; color: var(--cyan);">Middleware PHP y Ecosistema Microsoft 365 Cloud</p>
+            <div class="cover-meta">
+                <p style="font-size: 3.8vh; margin-bottom: 0.8vh;"><strong>GERARDO CANO</strong></p>
+                <p style="font-size: 2.4vh; color: var(--white); margin-bottom: 0.4vh;">Tutor de la empresa: Álex Reguera</p>
+                <p style="font-size: 2.4vh; color: var(--white); margin-bottom: 0.4vh;">Tutora de IES Caminàs: Ángela Bañuls</p>
+                <p style="font-size: 2vh; color: var(--gray); margin-top: 0.8vh;">PROYECTO FINAL ASIR 2026</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2 class="slide-title">Introducción al Proyecto</h2>
+        <div class="layout-grid">
+            <div class="content">
+                <ul>
+                    <li>Iniciativa estratégica para <span class="highlight">optimizar la gestión operativa</span> del departamento técnico de 720tec.</li>
+                    <li>Desarrollo de una arquitectura de integración que permite <span class="highlight">desacoplar la interfaz</span> de la lógica de almacenamiento.</li>
+                    <li>Implementación de un modelo de datos auditable, escalable y capaz de gestionar <span class="highlight">alertas preventivas</span>.</li>
+                </ul>
+            </div>
+            <div class="graph-box">
+                <div class="rect-item">Portal Web PHP</div>
+                <div class="flow-arrow">⬇ API Graph</div>
+                <div class="rect-item">SharePoint Cloud</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2 class="slide-title">La Empresa: 720tec S.L.L.</h2>
+        <div class="layout-grid">
+            <div class="content">
+                <ul>
+                    <li>Organización especializada en <span class="highlight">consultoría tecnológica de alto valor</span> para infraestructuras industriales y críticas.</li>
+                    <li>Modelo de gestión orientado a resultados donde la seguridad IT actúa como el <span class="highlight">pilar fundamental del negocio</span> y el garante principal de la <span class="highlight">confianza de los clientes</span>.</li>
+                    <li><span class="highlight">Socio tecnológico</span> especializado en arquitecturas integrales orientadas a la optimización de la continuidad del negocio y la robustez operativa.</li>
+                </ul>
+            </div>
+            <div class="pillar-container">
+                <div class="pillar-card">
+                    <i class="fa-solid fa-microchip"></i>
+                    <span>Consultoría IT</span>
+                </div>
+                <div class="pillar-card" style="border-width: 4px; background: rgba(8, 212, 255, 0.1);">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Gestión Crítica</span>
+                </div>
+                <div class="pillar-card">
+                    <i class="fa-solid fa-user-check"></i>
+                    <span>Confianza IT</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2 class="slide-title">Entorno del Departamento</h2>
+        <div class="layout-grid">
+            <div class="content">
+                <ul>
+                    <li>Gestión de <span class="highlight">Entornos Híbridos</span> con coexistencia de puestos Windows y servidores críticos bajo Debian Linux.</li>
+                    <li>Administración avanzada de sistemas en red con una alta capacidad de <span class="highlight">desarrollo interno</span> y scripting.</li>
+                    <li>Implementación de herramientas personalizadas que <span class="highlight">complementan</span> a las soluciones comerciales existentes.</li>
+                </ul>
+            </div>
+            <div class="graph-box">
+                <div class="rect-item"><i class="fa-brands fa-linux"></i> Debian Server</div>
+                <div class="rect-item"><i class="fa-brands fa-windows"></i> Microsoft Cloud</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2 class="slide-title">Necesidades Operativas</h2>
+        <div class="layout-grid">
+            <div class="content">
+                <ul>
+                    <li>Necesidad de una <span class="highlight">"Fuente Única de Verdad"</span> (Single Source of Truth) para centralizar la información técnica dispersa.</li>
+                    <li>Agilización de la captura de datos en tiempo real mediante métodos adaptados a <span class="highlight">terminales móviles</span> en campo.</li>
+                    <li>Exigencia de <span class="highlight">trazabilidad inalterable</span> para cumplir con auditorías y acuerdos de nivel de servicio (<span class="highlight">SLA</span>: acuerdo contractual que garantiza la calidad y los tiempos de respuesta del servicio).</li>
+                </ul>
+            </div>
+            <div class="vs-container">
+                <div class="vs-card problem">
+                    <div class="vs-header">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>Estado Anterior</span>
+                        <span class="vs-badge" style="color: #ef4444;">RIESGO IT</span>
+                    </div>
+                    <div class="vs-subtext">
+                        Registros dispersos en silos de información aislados. Fragilidad procedimental, propensión al error humano y falta de auditoría forense centralizada.
+                    </div>
+                </div>
+                
+                <div class="vs-divider">VS</div>
+                
+                <div class="vs-card solution">
+                    <div class="vs-header">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Traza Unificada</span>
+                        <span class="vs-badge" style="color: #22c55e;">COMPLIANCE</span>
+                    </div>
+                    <div class="vs-subtext">
+                        Repositorio centralizado inalterable. Mitigación activa del riesgo operativo mediante automatización serverless y cumplimiento garantizado de los SLA exigidos.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2 class="slide-title">Justificación Técnica</h2>
+        <div class="layout-grid">
+            <div class="content">
+                <ul>
+                    <li><span class="highlight">Soberanía Tecnológica:</span> Especialización de la capa operativa para gestionar de forma autónoma el procedimiento de ejecución técnica y el almacenamiento íntegro de la información.</li>
+                    <li>Complemento técnico para Autotask, automatizando la interacción con sistemas basados en <span class="highlight">Linux</span>.</li>
+                    <li>Reducción significativa de los <span class="highlight">tiempos de reporte</span> y eliminación del error humano en procesos manuales.</li>
+                </ul>
+            </div>
+            <div class="benefit-matrix">
+                <div class="matrix-node">
+                    <div class="matrix-icon"><i class="fa-solid fa-chart-line"></i></div>
+                    <div class="matrix-info">
+                        <div class="matrix-title">Retorno de Inversión (ROI)</div>
+                        <div class="matrix-desc">Amortización directa reduciendo horas de gestión administrativa.</div>
+                    </div>
+                </div>
+                <div class="matrix-node">
+                    <div class="matrix-icon"><i class="fa-solid fa-network-wired"></i></div>
+                    <div class="matrix-info">
+                        <div class="matrix-title">Eficiencia Operativa</div>
+                        <div class="matrix-desc">Orquestación de infraestructura automatizada en sistemas Linux corporativos.</div>
+                    </div>
+                </div>
+                <div class="matrix-node">
+                    <div class="matrix-icon"><i class="fa-solid fa-user-shield"></i></div>
+                    <div class="matrix-info">
+                        <div class="matrix-title">Soberanía del Dato</div>
+                        <div class="matrix-desc">Control estructural e inalterable absoluto de los logs técnicos.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2 class="slide-title">Presupuesto e Inversión</h2>
+        <div class="layout-grid">
+            <div class="content">
+                <ul>
+                    <li>Infraestructura Cloud: <span class="highlight">0,00 €</span> mediante el aprovechamiento de la Capa Gratuita (Free Tier) de AWS.</li>
+                    <li>Licenciamiento: <span class="highlight">0,00 €</span> al reutilizar las licencias Business Premium de Microsoft 365 existentes.</li>
+                    <li>Ingeniería Técnica: <span class="highlight">720,00 €</span> imputados a un cómputo de 40 horas de desarrollo especializado a 18€/h.</li>
+                </ul>
+            </div>
+            <div class="graph-box" style="border-color: #22c55e;">
+                <p style="font-size: 2.2vh; margin-bottom: 0.4vh;">COSTES DE PERSONAL</p>
+                <div class="rect-item" style="color: #22c55e; font-size: 4.5vh; padding: 1vh;">720,00 €</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2 class="slide-title">Gestión de Alternativas</h2>
+        <div class="layout-grid">
+            <div class="content">
+                <ul>
+                    <li><span class="highlight">Alternativa A (Elegida):</span> Arquitectura Híbrida con Middleware PHP y persistencia en SharePoint vía API Graph.</li>
+                    <li><span class="highlight">Alternativa B (Desestimada):</span> Gestión pasiva con Forms y Excel, descartada por rigidez y riesgo de corrupción del dato.</li>
+                    <li>Se prioriza el <span class="highlight">aislamiento total en VPC (Virtual Private Cloud)</span> y la elasticidad que ofrece el modelo de nube externa.</li>
+                </ul>
+            </div>
+            <div class="decision-board">
+                <div class="option-panel discarded">
+                    <div class="panel-header">
+                        <span>Gestión Tradicional</span>
+                        <i class="fa-solid fa-circle-xmark decision-icon"></i>
+                    </div>
+                    <div class="panel-tags">
+                        <span class="tag-small">FORMS</span>
+                        <span class="tag-small">EXCEL</span>
+                        <span class="tag-small">MANUAL</span>
+                    </div>
+                </div>
+
+                <div class="vs-divider" style="font-size: 1.5vh;">COMPARATIVA ESTRUCTURAL</div>
+
+                <div class="option-panel selected">
+                    <div class="panel-header">
+                        <span>Arquitectura Híbrida</span>
+                        <i class="fa-solid fa-circle-check decision-icon"></i>
+                    </div>
+                    <div class="panel-tags">
+                        <span class="tag-small">VPC ISOLATED</span>
+                        <span class="tag-small">ELASTIC</span>
+                        <span class="tag-small">API REST</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2 class="slide-title">Definición de la Solución</h2>
+        <div class="layout-grid">
+            <div class="content">
+                <ul style="font-size: 2.7vh;">
+                    <li><span class="highlight">Integración Multi-Cloud:</span> Interconexión robusta entre el Middleware alojado en AWS y el ecosistema Microsoft 365 mediante API REST protegido bajo <span class="highlight">TLS 1.3</span> (<span class="highlight">TLS 1.3</span>: Estándar moderno de seguridad criptográfica que cifra el tráfico web garantizando máxima velocidad y protección contra intercepciones).</li>
+                    <li><span class="highlight">Accesibilidad Universal:</span> Captura de datos técnicos mediante Web App responsiva diseñada para terminales móviles en planta industrial.</li>
+                    <li><span class="highlight">Persistencia Estructurada:</span> Uso de SharePoint Online como motor de datos no relacional, garantizando trazabilidad y cumplimiento normativo.</li>
+                    <li><span class="highlight">Seguridad End-to-End:</span> Cifrado de comunicaciones en tránsito (TLS 1.3) y autenticación delegada mediante Azure AD para blindar el acceso.</li>
+                </ul>
+            </div>
+            <div class="arch-diagram">
+                <div class="arch-step">
+                    <div class="arch-label">Capa de Acceso</div>
+                    <div class="arch-content"><i class="fa-solid fa-mobile-screen"></i> <span>Web App UI</span></div>
+                </div>
+                <div class="arch-link"><i class="fa-solid fa-chevron-down"></i></div>
+                <div class="arch-step active">
+                    <div class="arch-label">Capa de Lógica</div>
+                    <div class="arch-content"><i class="fa-brands fa-aws"></i> <span>AWS EC2 + PHP</span></div>
+                </div>
+                <div class="arch-link"><i class="fa-solid fa-chevron-down"></i></div>
+                <div class="arch-step">
+                    <div class="arch-label">Capa de Datos</div>
+                    <div class="arch-content"><i class="fa-brands fa-microsoft"></i> <span>M365 SharePoint</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2 class="slide-title">Recursos Cloud: AWS EC2</h2>
+        <div class="layout-grid">
+            <div class="content">
+                <ul style="font-size: 2.6vh;">
+                    <li><span class="highlight">Debian 12 Bookworm:</span> Distribución Linux corporativa elegida por su extrema estabilidad y robustez. Configurada en modo <strong>Headless</strong> (sin interfaz gráfica) para optimizar los recursos hardware y minimizar la superficie expuesta a ataques.</li>
+                    <li>Security perimetral mediante <span class="highlight">Security Groups</span> restringidos a la IP técnica y protocolos HTTPS/SSH.</li>
+                    <li><span class="highlight">Claves RSA de 4096 bits:</span> Algoritmo de cifrado asimétrico de máxima seguridad. Al emplear una longitud de clave de 4096 bits, se duplica la robustez estándar, haciendo que sea matemáticamente invulnerable a ataques de fuerza bruta en la actualidad.</li>
+                </ul>
+            </div>
+            <div class="server-monitor">
+                <div class="monitor-header">
+                    <span><i class="fa-solid fa-server"></i> EC2 INSTANCE</span>
+                    <span><span class="status-dot"></span> RUNNING</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-label">SO:</span>
+                    <span class="spec-value">Debian 12 "Bookworm" (Secure Core)</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-label">Tipo Instancia:</span>
+                    <span class="spec-value">t3.micro (Free Tier)</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-label">Acceso Admin:</span>
+                    <span class="spec-value">Par de Claves RSA-4096</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-label">Segmentación:</span>
+                    <span class="spec-value">VPC Aislada de Red Externa</span>
+                </div>
+                <div class="security-badge">
+                    <i class="fa-solid fa-user-shield"></i>
+                    ACCESO ADMINISTRATIVO BLINDADO
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2 class="slide-title">Gobernanza en Azure Entra ID</h2>
+        <div class="layout-grid">
+            <div class="content">
+                <ul>
+                    <li>Registro explícito de la aplicación para establecer una <span class="highlight">identidad digital única</span> dentro del Tenant de 720tec.</li>
+                    <li>Flujo de autenticación basado en <span class="highlight">OAuth 2.0 Client Credentials</span> mediante intercambio de secretos cifrados.</li>
+                    <li>Asignación de permisos bajo el <span class="highlight">principio de menor privilegio</span> (Sites.ReadWrite.All) para lectura/escritura.</li>
+                </ul>
+            </div>
+            <div class="auth-flow-dashboard">
+                <div class="auth-header">
+                    <span><i class="fa-solid fa-id-card-clip"></i> Proveedor de Identidad</span>
+                    <span style="font-size:1.1vh; color: var(--azure);">Azure Entra ID</span>
+                </div>
+                <div class="auth-grid">
+                    <div class="auth-box">
+                        <div class="box-title">Paso 1: Credenciales de la Aplicación</div>
+                        <div class="box-data">AppID: xxxxxxxxxxxxxxx | Secreto: ••••••••••••••••</div>
+                    </div>
+                    <div class="auth-box token-glow">
+                        <div class="box-title">Paso 2: Token de Acceso (JWT)</div>
+                        <div class="box-data" style="color:var(--cyan);">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs...</div>
+                    </div>
+                    <div class="auth-box" style="border-color:var(--green);">
+                        <div class="box-title">Paso 3: Ámbito de Permisos de Microsoft Graph</div>
+                        <div class="scope-tag">Sites.ReadWrite.All</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2 class="slide-title">Lógica del Middleware PHP</h2>
+        <div class="layout-grid">
+            <div class="content">
+                <ul style="font-size: 2.6vh;">
+                    <li><span class="highlight">Transferencia Asíncrona:</span> Implementación mediante librerías nativas cURL que permite enviar paquetes de datos JSON hacia la nube en segundo plano, logrando que el portal web libere al técnico de inmediato sin esperar bloqueado a que la API de Microsoft procese la solicitud.</li>
+                    <li><span class="highlight">Sanitización contra XSS:</span> Capa defensiva encargada de filtrar, depurar y neutralizar caracteres especiales de los inputs de entrada. Su fin es evitar ataques de **Cross-Site Scripting**, impidiendo que código script inyectado accidental o maliciosamente se guarde y se ejecute en los navegadores de otros usuarios.</li>
+                    <li><span class="highlight">Caché Local Temporal:</span> Mecanismo de persistencia interna en el servidor que conserva el token OAuth (JWT) durante sus 60 minutos de vigencia legal. Optimiza el tráfico y reduce la latencia drásticamente al eliminar la necesidad de loguearse en Azure Entra ID con cada nueva inserción.</li>
+                </ul>
+            </div>
+            <div class="logic-pipeline">
+                <div class="pipeline-step">
+                    <div class="step-icon-box"><i class="fa-solid fa-shield-halved"></i></div>
+                    <div class="step-text-nodes">
+                        <span class="step-meta-tag">Capa de Seguridad</span>
+                        <span class="step-core-action">Filtro y Sanitización de Inyecciones XSS</span>
+                    </div>
+                    <div class="step-status-badge">Filtrado</div>
+                </div>
+                <div class="pipeline-step">
+                    <div class="step-icon-box"><i class="fa-solid fa-memory"></i></div>
+                    <div class="step-text-nodes">
+                        <span class="step-meta-tag">Control de Sesión</span>
+                        <span class="step-core-action">Reutilización de Bearer Token en Caché</span>
+                    </div>
+                    <div class="step-status-badge">Válido</div>
+                </div>
+                <div class="pipeline-step" style="border-color: var(--cyan); background: rgba(8, 212, 255, 0.04);">
+                    <div class="step-icon-box" style="color: var(--cyan); border-color: var(--cyan);"><i class="fa-solid fa-paper-plane"></i></div>
+                    <div class="step-text-nodes">
+                        <span class="step-meta-tag">Capa de Comunicación</span>
+                        <span class="step-core-action">Envío cURL Asíncrono (JSON Payload)</span>
+                    </div>
+                    <div class="step-status-badge" style="color: var(--cyan); border-color: var(--cyan); background: rgba(8, 212, 255, 0.1);">Enviado</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2 class="slide-title">SharePoint como Motor DB</h2>
+        <div class="layout-grid">
+            <div class="content">
+                <ul style="font-size: 2.8vh;">
+                    <li><span class="highlight">Esquema Estructurado:</span> Modelado lógico detallado mediante listas corporativas con metadatos fuertemente tipados de tipo selección (Choice), formato de fecha (DateTime) y búsquedas relacionales vinculadas (Lookup).</li>
+                    <li><span class="highlight">Trazabilidad Nativa:</span> Garantía absoluta de un registro forense inalterable mediante la activación obligatoria de políticas de versionado que auditan y guardan cada modificación de datos por usuario.</li>
+                    <li><span class="highlight">Vinculación Identitaria:</span> Integración directa de los metadatos de los técnicos de campo con su identidad corporativa del Directorio Activo (Entra ID), asegurando que cada registro insertado sea veraz, seguro y completamente auditable.</li>
+                </ul>
+            </div>
+            <div class="db-schema-panel">
+                <div class="schema-header">
+                    <span class="schema-title"><i class="fa-solid fa-table-list"></i> Microsoft List: IT_Logs</span>
+                    <span style="font-size: 1vh; color: var(--green);">[ AUDIT ENABLED ]</span>
+                </div>
+                <div class="schema-table">
+                    <div class="table-row">
+                        <i class="fa-solid fa-font type-icon"></i>
+                        <span class="field-name">Technical_ID</span>
+                        <span class="field-type">Primary_Key</span>
+                    </div>
+                    <div class="table-row">
+                        <i class="fa-solid fa-calendar-day type-icon"></i>
+                        <span class="field-name">Report_Date</span>
+                        <span class="field-type">DateTime</span>
+                    </div>
+                    <div class="table-row">
+                        <i class="fa-solid fa-user-check type-icon"></i>
+                        <span class="field-name">Author_ID</span>
+                        <span class="field-type">Azure_AD_Link</span>
+                    </div>
+                    <div class="table-row" style="border-color: var(--cyan);">
+                        <i class="fa-solid fa-list-check type-icon" style="color: var(--cyan);"></i>
+                        <span class="field-name">Status_Code</span>
+                        <span class="field-type">Choice_List</span>
+                    </div>
+                </div>
+                <div class="version-badge">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Versioning: v2.4 (Active & Historical Tracked)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2 class="slide-title">Orquestación Serverless</h2>
+        <div class="layout-grid">
+            <div class="content">
+                <ul>
+                    <li>Automatización basada en <span class="highlight">disparadores disparados por eventos</span> al confirmar registros en la lista.</li>
+                    <li>Lógica conmutada mediante nodos Switch para calcular <span class="highlight">vencimientos automáticos</span> según periodicidad.</li>
+                    <li>Optimización de hilos mediante el uso de la directiva <span class="highlight">"Delay Until"</span>, pausando el flujo sin consumo de hilos.</li>
+                </ul>
+            </div>
+            <div class="premium-workflow-container">
+                <div class="wf-node-box">
+                    <div class="wf-node-icon"><i class="fa-solid fa-bolt"></i></div>
+                    <div class="wf-node-texts">
+                        <span class="wf-node-meta">Trigger de Evento</span>
+                        <span class="wf-node-title">SharePoint: OnItemCreated</span>
+                    </div>
+                    <div class="wf-node-badge" style="background: rgba(8, 212, 255, 0.15); color: var(--cyan); border: 1px solid var(--cyan);">Automático</div>
+                </div>
+                <div class="wf-node-box" style="border-color: var(--azure);">
+                    <div class="wf-node-icon" style="color: var(--azure); border-color: var(--azure);"><i class="fa-solid fa-code-branch"></i></div>
+                    <div class="wf-node-texts">
+                        <span class="wf-node-meta">Evaluación Switch</span>
+                        <span class="wf-node-title">Cálculo de Periodicidad</span>
+                    </div>
+                    <div class="wf-node-badge" style="background: rgba(0, 120, 212, 0.15); color: var(--azure); border: 1px solid var(--azure);">Lógica</div>
+                </div>
+                <div class="wf-node-box" style="border-color: var(--green);">
+                    <div class="wf-node-icon" style="color: var(--green); border-color: var(--green);"><i class="fa-solid fa-hourglass-start"></i></div>
+                    <div class="wf-node-texts">
+                        <span class="wf-node-meta">Control Serverless</span>
+                        <span class="wf-node-title">Directiva "Delay Until"</span>
+                    </div>
+                    <div class="wf-node-badge" style="background: rgba(34, 197, 94, 0.15); color: var(--green); border: 1px solid var(--green);">0% CPU</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2 class="slide-title">Notificaciones Duales</h2>
+        <div class="layout-grid">
+            <div class="content">
+                <ul>
+                    <li>Canal Inmediato: Mensajería en <span class="highlight">Microsoft Teams</span> mediante mensajes de texto estándar en canales técnicos.</li>
+                    <li>Canal Formal: Notificaciones en <span class="highlight">Outlook</span> (Exchange) con plantillas HTML y códigos cromáticos de urgencia.</li>
+                    <li>Monitorización constante de plazos con disparo de alertas críticas si el vencimiento es <span class="highlight">inferior a 24 horas</span>.</li>
+                </ul>
+            </div>
+            <div class="dual-notif-monitor">
+                <div class="mock-app-window teams-theme">
+                    <div class="window-topbar">
+                        <i class="fa-brands fa-microsoft-teams" style="color: #6264a7; font-size: 1.8vh;"></i> Microsoft Teams Chat
+                    </div>
+                    <div class="window-body">
+                        <div class="teams-msg-bubble">
+                            <div class="teams-user">SISTEMA AUTOMÁTICO IT</div>
+                            <div class="teams-text">[ALERTA] Revisión crítica pendiente para el servidor DEB-PROD-01. Plazo inferior a 24 horas.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mock-app-window outlook-theme">
+                    <div class="window-topbar">
+                        <i class="fa-solid fa-envelope" style="color: #0078d4; font-size: 1.8vh;"></i> Outlook Inbox
+                    </div>
+                    <div class="window-body">
+                        <div class="outlook-mail">
+                            <div class="mail-header">De: alerts@720tec.sll | Para: soporte@720tec.sll</div>
+                            <div class="mail-subject">URGENTE: Próximo vencimiento de mantenimiento IT</div>
+                            <div class="mail-priority-line">
+                                <i class="fa-solid fa-circle-exclamation"></i> Prioridad: Alta (Código Cromático Rojo)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2 class="slide-title">Conclusiones y Futuro</h2>
+        <div class="layout-grid">
+            <div class="content">
+                <ul>
+                    <li>Éxito en la <span class="highlight">Digitalización Total</span>: Erradicación del error humano y la fragmentación documental técnica.</li>
+                    <li>Amortización inmediata de la ingeniería mediante el ahorro masivo de <span class="highlight">horas de soporte</span> en campo.</li>
+                    <li>Arquitectura escalable preparada para integración futura con sensores de red mediante <span class="highlight">protocolos SNMP</span>.</li>
+                </ul>
+            </div>
+            <div class="success-panel-container">
+                <div class="success-header-row">
+                    <span style="font-family:'JetBrains Mono', monospace; font-size: 1.4vh; color: var(--gray);">ESTADO DE DESPLIEGUE</span>
+                    <span class="success-badge-premium">ÉXITO</span>
+                </div>
+                
+                <div class="success-metrics-grid">
+                    <div class="metric-sub-card">
+                        <i class="fa-solid fa-globe"></i>
+                        <div class="metric-sub-texts">
+                            <span class="metric-sub-val">24/7/365</span>
+                            <span class="metric-sub-lbl">Continuidad</span>
+                        </div>
+                    </div>
+                    <div class="metric-sub-card">
+                        <i class="fa-solid fa-bolt"></i>
+                        <div class="metric-sub-texts">
+                            <span class="metric-sub-val">0h</span>
+                            <span class="metric-sub-lbl">Procesos Manuales</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="snmp-future-box">
+                    <i class="fa-solid fa-circle-nodes"></i>
+                    <div style="display:flex; flex-direction:column; gap:0.2vh;">
+                        <span style="font-size:1.3vh; font-weight:bold; color:var(--cyan); text-transform:uppercase; letter-spacing:0.5px;">HOJA DE RUTA FUTURA</span>
+                        <span style="font-size:1.1vh; color:var(--gray); font-family:'JetBrains Mono', monospace; line-height:1.3;">Integración nativa SNMP para telemetría de routers, switches e IoT industrial en tiempo real.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <div style="text-align: center; justify-content: center; height: 100%; display: flex; flex-direction: column; align-items: center;">
+            <h2 style="font-size: 10vh; color: var(--cyan); font-family: 'Poppins', sans-serif;">¿PREGUNTAS?</h2>
+            <p style="font-size: 3.5vh;">Muchas gracias por su atención.</p>
+            <div style="margin-top: 4vh; font-size: 2.2vh; color: var(--gray);">
+                GERARDO CANO | PROYECTO FINAL ASIR | 720tec S.L.L.
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn" onclick="prevSlide()">Anterior</button>
+        <button class="btn" onclick="nextSlide()">Siguiente</button>
+    </div>
+    
+    <div class="counter" id="slide-counter">1 / 17</div>
+
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const counter = document.getElementById('slide-counter');
+
+    function updateSlide() {
+        slides.forEach((s, i) => {
+            s.classList.toggle('active', i === currentSlide);
+        });
+        counter.innerText = (currentSlide + 1) + ' / ' + slides.length;
+    }
+
+    function nextSlide() {
+        if (currentSlide < slides.length - 1) {
+            currentSlide++;
+            updateSlide();
+        }
+    }
+
+    function prevSlide() {
+        if (currentSlide > 0) {
+            currentSlide--;
+            updateSlide();
+        }
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            e.preventDefault();
+            nextSlide();
+        }
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            prevSlide();
+        }
+    });
+
+    updateSlide();
+</script>
+
+</body>
+</html>
